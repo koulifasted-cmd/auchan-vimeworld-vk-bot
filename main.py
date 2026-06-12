@@ -25,6 +25,7 @@ def init_db():
     cursor.execute('''CREATE TABLE IF NOT EXISTS config (param TEXT PRIMARY KEY, val REAL)''')
     cursor.execute("INSERT OR IGNORE INTO config VALUES ('budget_rub', 10000.0)")
     cursor.execute("INSERT OR IGNORE INTO config VALUES ('budget_vim', 5000.0)")
+    cursor.execute("INSERT OR IGNORE INTO config VALUES ('min_buy_amount', 10.0)")
     
     # Таблица пользователей (состояния, скидки, статусы)
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
@@ -186,8 +187,10 @@ for event in longpoll.listen():
         if u["state"] == "wait_buy_amount":
             try:
                 amount = float(text)
-                if amount < 10:
-                    send_msg(user_id, "⚠️ Минимальная сумма покупки — 10 Вимеров. Введите другое число:")
+                
+                min_buy = get_config("min_buy_amount")
+                if amount < min_buy:
+                    send_msg(user_id, f"⚠️ Минимальная сумма покупки сейчас составляет — {int(min_buy)} Вимеров. Введите другое число:")
                     continue
                 
                 b_vim = get_config("budget_vim")
@@ -474,9 +477,13 @@ for event in longpoll.listen():
             if text_lower == "админ":
                 b_rub = get_config("budget_rub")
                 b_vim = get_config("budget_vim")
+                min_buy = get_config("min_buy_amount")
                 adm_panel = (f"⚙️ **Панель Администратора**\n\n"
                              f"💰 Бюджет рублей: **{b_rub} ₽**\n"
-                             f"🔮 Бюджет вимеров: **{b_vim} вим.**\n\n"
+                             f"🔮 Бюджет вимеров: **{b_vim} вим.**\n"
+                             f"📦 Мин. покупка: **{int(min_buy)} вим.**\n\n"
+                             f"📌 **Команды управления (писать в чат):**\n"
+                             f"• `+мин [число]` — изменить минимальную сумму покупки\n"
                              f"📌 **Команды управления (писать в чат):**\n"
                              f"• `+руб [число]` или `-руб [число]` — изменить баланс руб.\n"
                              f"• `+вим [число]` или `-вим [число]` — изменить баланс вим.\n"
@@ -500,6 +507,14 @@ for event in longpoll.listen():
                 new_val = (current + val) if text.startswith("+") else (current - val)
                 update_config("budget_vim", max(0.0, new_val))
                 send_msg(user_id, f"✅ Бюджет вимеров изменен. Теперь: {get_config('budget_vim')} вим.")
+                continue
+            elif text_lower.startswith("+мин "):
+                try:
+                    val = float(text.split(" ")[1])
+                    update_config("min_buy_amount", val)
+                    send_msg(user_id, f"✅ Минимальная сумма покупки успешно изменена на: {val} вим.")
+                except:
+                    send_msg(user_id, "❌ Ошибка. Пример команды: +мин 10000")
                 continue
 
             elif text_lower.startswith("скидка "):
