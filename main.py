@@ -25,7 +25,7 @@ def init_db():
     cursor.execute('''CREATE TABLE IF NOT EXISTS config (param TEXT PRIMARY KEY, val REAL)''')
     cursor.execute("INSERT OR IGNORE INTO config VALUES ('budget_rub', 10000.0)")
     cursor.execute("INSERT OR IGNORE INTO config VALUES ('budget_vim', 5000.0)")
-    cursor.execute("INSERT OR IGNORE INTO config VALUES ('min_buy_amount', 10.0)")
+    cursor.execute("INSERT OR IGNORE INTO config VALUES ('min_buy_amount', 100.0)")
     
     # Таблица пользователей (состояния, скидки, статусы)
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
