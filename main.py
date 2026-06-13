@@ -153,16 +153,16 @@ def make_admin_inline(deal_id):
 # ================= ЛОГИКА МАТЕМАТИКИ =================
 def calc_buy(user_id, amount):
     u = get_user(user_id)
-    base_rate = 0.30
+    base_rate = 0.35
     personal_rate = base_rate * (1 - u["discount"] / 100)
-    final_rate = min(0.25, personal_rate) if amount >= 15000 else personal_rate
+    final_rate = min(0.3, personal_rate) if amount >= 15000 else personal_rate
     return round(amount * final_rate, 2), round(final_rate, 2)
 
 def calc_sell(user_id, amount):
     u = get_user(user_id)
-    base_rate = 0.15
+    base_rate = 0.22
     personal_rate = base_rate * (1 + u["discount"] / 100)
-    final_rate = max(0.18, personal_rate) if amount >= 10000 else personal_rate
+    final_rate = max(0.25, personal_rate) if amount >= 10000 else personal_rate
     return round(amount * final_rate, 2), round(final_rate, 2)
 
 # ================= ОСНОВНОЙ ЦИКЛ БОТА =================
@@ -311,10 +311,10 @@ for event in longpoll.listen():
             b_vim = get_config("budget_vim")
             update_user(user_id, state="wait_buy_amount")
             msg = (f"🔮 **Покупка Вимеров**\n\n"
-                   f"📈 Актуальный курс: **0.30 ₽** за 1 Вимер\n"
+                   f"📈 Актуальный курс: **0.35 ₽** за 1 Вимер\n"
                    f"👤 Ваша персональная скидка: **{u['discount']}%**\n\n"
                    f"🔥 **Выгодное предложение:**\n"
-                   f"При покупке от **15 000 Вимеров**, цена снижается! Курс составит всего **0.25 ₽** за 1 Вимер.\n\n"
+                   f"При покупке от **15 000 Вимеров**, цена снижается! Курс составит всего **0.3 ₽** за 1 Вимер.\n\n"
                    f"🏪 Доступно в магазине: **{b_vim} Вимеров**\n"
                    f"⚙️ *Минимальная сумма заказа — 10 Вимеров.*\n\n"
                    f"⬇️ **Введите желаемое количество Вимеров для покупки:**")
@@ -324,10 +324,10 @@ for event in longpoll.listen():
             b_rub = get_config("budget_rub")
             update_user(user_id, state="wait_sell_amount")
             msg = (f"💰 **Продажа Вимеров**\n\n"
-                   f"📈 Базовый курс скупки: **0.15 ₽** за 1 Вимер\n"
+                   f"📈 Базовый курс скупки: **0.22 ₽** за 1 Вимер\n"
                    f"➕ Ваша персональная надбавка: **+{u['discount']}%**\n\n"
                    f"🔥 **Оптовый бонус:**\n"
-                   f"При продаже от **10 000 Вимеров**, ваш курс увеличивается! Цена составит **0.18 ₽** за 1 Вимер.\n\n"
+                   f"При продаже от **10 000 Вимеров**, ваш курс увеличивается! Цена составит **0.25 ₽** за 1 Вимер.\n\n"
                    f"🏦 Бюджет рублей у бота: **{b_rub} ₽**\n\n"
                    f"⬇️ **Введите количество Вимеров, которое хотите продать:**")
             send_msg(user_id, msg, cancel_keyboard)
@@ -348,8 +348,8 @@ for event in longpoll.listen():
                         f"• Всего проведено: **{total_deals} шт.**\n"
                         f"• Проведено за сегодня: **{daily_deals} шт.**\n\n"
                         f"📈 **Текущие курсы:**\n"
-                        f"• Магазин продает: **0.30 ₽** *(от 15к — 0.25 ₽)*\n"
-                        f"• Магазин скупает: **0.15 ₽** *(от 10к — 0.18 ₽)*")
+                        f"• Магазин продает: **0.35 ₽** *(от 15к — 0.3 ₽)*\n"
+                        f"• Магазин скупает: **0.22 ₽** *(от 10к — 0.25 ₽)*")
             send_msg(user_id, info_msg, main_keyboard)
 
         elif text == "👤 Профиль":
